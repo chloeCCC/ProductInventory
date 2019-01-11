@@ -29,4 +29,7 @@ class Product {
         this.quantity += quantity;
     }
 
+    void setQuantity(int reduce) { this.quantity += - reduce; }
+
+
 }

@@ -29,14 +29,42 @@ public class Inventory {
             if (product.getPrice() != price) {
                 product.setPrice(price);
             }
-
         } else {
             products.add(new Product(productId, price, quantity));
         }
     }
 
     void removeProduct(String productId, int quantity) throws InsufficientInventory {
-        // you write this class
+        for (int i = products.size() - 1; i >= 0; i--) {
+            if(products.get(i).getProductId().equals(productId)) {
+                products.get(i).setQuantity(quantity);
+                if(products.get(i).getQuantity() == 0) {
+                    products.remove(i);
+                }else if(products.get(i).getQuantity() < 0) {
+                    throw new InsufficientInventory(products.get(i).getQuantity(), quantity);
+                }
+
+            }else {
+                throw new InsufficientInventory(0, quantity);
+            }
+        }
+    }
+
+    double totalInventoryValue() {
+        double total = 0;
+        for (int i = 0; i < products.size(); i++) {
+            total += products.get(i).getPrice() * products.get(i).getQuantity();
+        }
+        return total;
+    }
+
+    boolean inStock(String productId) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getProductId().equals(productId)) {
+            return true;
+            }
+        }
+        return false;
     }
 
     Product getProduct(String productId) {
@@ -53,7 +81,6 @@ public class Inventory {
         for (Product product : products) {
             productIds.add(product.getProductId());
         }
-
         return String.join(", ", productIds);
     }
 
@@ -63,5 +90,7 @@ public class Inventory {
         inventory.addProduct("banana", .6, 1);
 
         System.out.println(inventory.getAllProductNames());
+        System.out.println(inventory.totalInventoryValue());
+        System.out.println(inventory.inStock("banana"));
     }
 }
