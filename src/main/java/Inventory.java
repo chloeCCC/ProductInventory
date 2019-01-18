@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 class InsufficientInventory extends Exception {
     public InsufficientInventory(int currentInventory, int requestedInventory) {
@@ -11,23 +9,24 @@ class InsufficientInventory extends Exception {
 }
 
 public class Inventory {
-    private Set<Product> products = new HashSet<>();
+
+    Map<String, Product> products = new HashMap<>();
 
     void addProduct(String productId, double price, int quantity) {
         if (inStock(productId)) {
-            Product p = getProduct(productId);
+            Product p = products.get(productId);
             p.addStock(quantity);
             if (p.getPrice() != price) {
                 p.setPrice(price);
             }
         } else {
-            products.add(new Product(productId, price, quantity));
+            products.put(productId,new Product(productId, price, quantity));
         }
     }
 
     void removeProduct(String productId, int quantity) throws InsufficientInventory {
         if (inStock(productId)) {
-            Product p = getProduct(productId);
+            Product p = products.get(productId);
             p.setQuantity(quantity);
              if (p.getQuantity() == 0) {
                 products.remove(productId);
@@ -42,36 +41,18 @@ public class Inventory {
 
     double totalInventoryValue() {
         double total = 0;
-        for (Product p : products) {
-            total += p.getPrice() * p.getQuantity();
+        for (Product p :products.values()) {
+            total += p.getQuantity()*p.getPrice();
         }
         return total;
     }
 
     boolean inStock(String productId) {
-        for (Product p : products) {
-            if (p.getProductId().equals(productId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    Product getProduct(String productId) { ;
-        for (Product p : products) {
-            if (p.getProductId().equals(productId)) {
-                return p;
-            }
-        }
-        return null;
+        return products.containsKey(productId);
     }
 
     String getAllProductNames() {
-        List<String> productIds = new ArrayList<>();
-        for (Product product : products) {
-            productIds.add(product.getProductId());
-        }
-        return String.join(", ", productIds);
+        return String.join(", ", products.keySet());
     }
 
     public static void main(String[] args) {
