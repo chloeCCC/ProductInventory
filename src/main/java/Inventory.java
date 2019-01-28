@@ -9,7 +9,6 @@ class InsufficientInventory extends Exception {
 }
 
 public class Inventory {
-
     Map<String, Product> products = new HashMap<>();
 
     void addProduct(String productId, double price, int quantity) {
